@@ -1,21 +1,5 @@
 import sys, time, dis
 
-# Example code for deriving time.
-result = time.localtime()
-print(result, "%S")
-print(f"type of result: {type(result)}")
-print(result.tm_sec)
-timeString = time.strftime("%S %D %d")
-
-print(timeString)
-#---------------------------------
-
-# bytecode
-def greetA():
-    return "Hi, how are you"
-
-dis.dis(greetA)
-
 # Mutable Objects and practice for determining the size allocated in memory for each object.
 print(f"\n-----determining SIZE----")
 
@@ -137,6 +121,20 @@ strG = strF
 print(sys.getrefcount(strF))
 
 
+# Example code for deriving time.
+result = time.localtime()
+print(result, "%S")
+print(f"type of result: {type(result)}")
+print(result.tm_sec)
+timeString = time.strftime("%S %D %d")
 
+print(timeString)
+#---------------------------------
+
+# bytecode
+def greetA():
+    return "Hi, how are you"
+
+dis.dis(greetA)
 
 
