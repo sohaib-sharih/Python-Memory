@@ -458,3 +458,220 @@ SUMMARY:
 | Integer (256+)              | Immutable   | Unique \| Referenced variable will share the same ID | 4                            | Reference count begins from 4 unless if any other variable is pointing to it. Depending on the number of references, the count increases or decreases.                                         |
 | List                        | Mutable     | Unique                                               | 2                            | Increases only if another variable is Referenced to it, otherwise remains the base value.                                                                                                      |
 
+## 4.0 Memory Optimization Behavior in Python Script Vs REPL Interactive Mode
+
+1. Python ***Memory Optimization*** behaves differently when python runs a program as a ***Script*** VS when it runs a python program in ***interactive mode***
+2. Difference between ***Python Script*** VS ***Interactive*** Mode
+
+	a. **Python Script:** A python script is run as a single execution process or is run an entire file as a *whole.* This can be achieved when you run a python file in `.py` extension format using the following command on your terminal `python script.py`
+	
+	b. **Interactive mode:** When you run python through an ***REPL (Read Eval Print Loop) Mode***. This can be acheived when you type `python + enter OR python3 + enter` on the terminal, the shell will become interactive python. *Which means that you can type any line of code on the terminal, and upon pressing enter, it will give you an output without using the Python keyword followed by the filename to run the script.*
+	
+3. What is **REPL?**
+	a. **Read:** Python reads the user input (a command or expression).
+	b. **Eval**: Python evaluates the expression or executes the statement.
+	c. **Print:** The result is displayed to the user.
+	d. **Loop:** The process repeats, allowing continuous interaction.
+	
+4. **Memory Optimization Behavior:** 
+
+	a. **Python Script Mode:** If you have 2 different variables with the same integer value, even if it falls out of the range of -5 to 256, it will still ***intern*** the object value, because when a python file executes as a single process and as a whole at once, then it forces memory optimization where ever possible. *You can check this by using the keyword **is** to evaluate whether the memory ID is the Same or Different* . Thus, it returns ***False*** in python script.
+	
+	b. **Interactive mode:** If you run your script through Jupyter or Google Colab or by running your code statements on interactive python mode on your local system, it will avoid **Memory optimization**. It assumes the user might frequently modify objects, so it creates separate memory allocations to prevent unwanted optimizations. *Jupyter/Google Colab/Python interactive mode, all use the REPL strategy in executing the code, therefore when executing each statement line by line, it assigns each variable a new memory address.*
+
+EXAMPLE RUNNING CODE THROUGH PYTHON SCRIPT
+
+```
+import sys
+
+a = 100
+b = 259
+print(f"id of a-> {id(a)}\n refCount -> {sys.getrefcount(a)}")
+print(f"id of b-> {id(b)}\n refCount -> {sys.getrefcount(b)}")
+print(a is b)
+
+print("\n-----x and y-----")
+x = 200
+y = 200
+print(f"id of x-> {id(x)}\n refCount -> {sys.getrefcount(x)}")
+print(f"id of y-> {id(y)}\n refCount -> {sys.getrefcount(y)}")
+print(x is y)
+print("\n----q and w-----")
+q = 1000000
+w = 1000000
+sum = q + w
+print(sum)
+
+print(f"id of q-> {id(q)}\n refCount -> {sys.getrefcount(q)}")
+print(f"id of w-> {id(w)}\n refCount -> {sys.getrefcount(w)}")
+print(q is w)
+
+print("\n----p and o-----")
+p = 70
+o = 100
+print(f"id of p-> {id(p)}\n refCount -> {sys.getrefcount(p)}")
+print(f"id of o-> {id(o)}\n refCount -> {sys.getrefcount(o)}")
+print(p is o)
+
+# STRING INTERNING
+
+print('\n---------checking string-------')
+strA = 'Pakistan'
+strB = 'Pakistan'
+print(strA == strB)
+print(f'strA is strB -> {strA is strB}\nMemory id strA ->{id(strA)}\nMemory id strB ->{id(strB)}')
+strC = "Swiss is of good quality"
+strD = "Swiss is of good quality"
+print(strC == strD)
+print(f'strC is strD -> {strC is strD}\nMemory id strC ->{id(strC)}\nMemory id strD ->{id(strD)}')
+
+OUTPUT:
+
+id of a-> 140714199158792
+ refCount -> 4294967295
+id of b-> 2914695551472
+ refCount -> 4
+False
+
+-----x and y-----
+id of x-> 140714199161992
+ refCount -> 4294967295
+id of y-> 140714199161992
+ refCount -> 4294967295
+True
+
+----q and w-----
+2000000
+id of q-> 2914698315376
+ refCount -> 5
+id of w-> 2914698315376
+ refCount -> 5
+True
+
+----p and o-----
+id of p-> 140714199157832
+ refCount -> 4294967295
+id of o-> 140714199158792
+ refCount -> 4294967295
+False
+
+---------checking string-------
+True
+
+---------checking string-------
+True
+---------checking string-------
+True
+True
+strA is strB -> True
+Memory id strA ->2914698599280
+Memory id strB ->2914698599280
+True
+strC is strD -> True
+Memory id strC ->2914698443664
+Memory id strD ->2914698443664
+```
+
+EXAMPLE RUNNING PYTHON THROUGH INTERACTIVE MODE(Google Colab + Jupyter)
+
+```
+import sys
+
+a = 100
+b = 259
+print(f"id of a-> {id(a)}\n refCount -> {sys.getrefcount(a)}")
+print(f"id of b-> {id(b)}\n refCount -> {sys.getrefcount(b)}")
+print(a is b)
+
+print("\n-----x and y-----")
+x = 200
+y = 200
+print(f"id of x-> {id(x)}\n refCount -> {sys.getrefcount(x)}")
+print(f"id of y-> {id(y)}\n refCount -> {sys.getrefcount(y)}")
+print(x is y)
+print("\n----q and w-----")
+q = 1000000
+w = 1000000
+sum = q + w
+print(sum)
+
+print(f"id of q-> {id(q)}\n refCount -> {sys.getrefcount(q)}")
+print(f"id of w-> {id(w)}\n refCount -> {sys.getrefcount(w)}")
+print(q is w)
+
+print("\n----p and o-----")
+p = 70
+o = 100
+print(f"id of p-> {id(p)}\n refCount -> {sys.getrefcount(p)}")
+print(f"id of o-> {id(o)}\n refCount -> {sys.getrefcount(o)}")
+print(p is o)
+
+# STRING INTERNING
+
+print('\n---------checking string-------')
+strA = 'Pakistan'
+strB = 'Pakistan'
+print(strA == strB)
+print(f'strA is strB -> {strA is strB}\nMemory id strA ->{id(strA)}\nMemory id strB ->{id(strB)}')
+strC = "Swiss is of good quality"
+strD = "Swiss is of good quality"
+print(strC == strD)
+print(f'strC is strD -> {strC is strD}\nMemory id strC ->{id(strC)}\nMemory id strD ->{id(strD)}')
+
+OUTPUT:
+
+id of a-> 140714199158792 
+refCount -> 4294967295 
+id of b-> 1802703108592 
+refCount -> 3 
+False 
+-----x and y----- 
+id of x-> 140714199161992 
+refCount -> 4294967295 
+id of y-> 140714199161992 
+refCount -> 4294967295 
+True 
+----q and w----- 
+2000 
+id of q-> 1802703107952 
+refCount -> 3 
+id of w-> 1802703108464 
+refCount -> 3 
+False 
+----p and o----- 
+id of p-> 140714199157832 
+refCount -> 4294967295 i
+d of o-> 140714199158792 
+refCount -> 4294967295 
+False 
+---------checking string------- 
+True 
+strA is strB -> True 
+Memory id strA ->1802704376624 
+Memory id strB ->1802704376624 
+True 
+strC is strD -> False 
+Memory id strC ->1802704312064 
+Memory id strD ->1802704424592
+```
+
+6. **Differentiating between 'is' and == (Equality sign)**
+
+	a. **is** => is used to evaluate and check whether both the values are stored in the same memory location, if yes, then output will be **true**, otherwise false.
+	b. **Equality `==`**: This evaluates if the values of both the variables are the same, if yes, then the output will be true, otherwise false.
+
+#### Why is Memory Optimization Important?
+
+1. When a python program runs, it utilizes the memory of the RAM on your system to save data, evaluate and process it which gives us the output through the ***terminal.***
+2. How much RAM is used is the task of Memory Optimization and Management, if your code utilizes minimum memory space to run the program file, it is said to be ***Memory Optimized or Memory efficient.*** Because if memory is utilized in an optimized manner, it makes your code and program efficient, it helps to process your program/code run faster using minimal memory resources.
+3. This is where the concept of ***intern*** steps in, where python checks if there are multiple variables referenced to the same object, then it will store that particular object in a single memory block rather than assigning a new object and new memory address for the same Value of the object. *If the value of the object is similar, it is interned and other variables are referenced to the same object, making it more memory efficient.*
+4. Python ***interns*** objects automatically as well as manually. To do it manually, you can import the `sys module` and use the `intern method` to intern an object value, which means that it will allocate a ***single memory address/block*** to that interned object and make other variables reference to that object. *When doing it automatically, it usually interns integers valued between the range of -5 to 256, and strings without space.*
+
+#### SUMMARY OUTPUT OF CODE RUN AS SCRIPT VS INTERACTIVE MODE
+
+| Criteria                             | Condition/Operation                      | Interactive Mode | Python Script |
+| ------------------------------------ | ---------------------------------------- | ---------------- | ------------- |
+| -5 to 256                            | is \| Both variables hold the same value | True             | True          |
+| >256                                 | is \| Both variables hold the same value | True             | False         |
+| Single Word in String                | is \| Both variables hold the same value | True             | True          |
+| Multiple words with spaces in String | is \| Both variables hold the same value | True             | False         |
